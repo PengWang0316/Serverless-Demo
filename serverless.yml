@@ -17,6 +17,14 @@ provider:
       Action: dynamodb:scan
       Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
 
+# you can add packaging information here
+package:
+#  include:
+#    - ../../node_modules/**
+ exclude:
+   - DynamodbScripts/**
+  #  - exclude-me-dir/**
+
 functions:
   get-index:
     handler: functions/get-index.handler
@@ -24,6 +32,9 @@ functions:
       - http:
           path: /
           method: get
+    environment:
+      restaurants_api: https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev/restaurants
+
   get-restaurants:
     handler: functions/get-restaurants.handler
     events:
