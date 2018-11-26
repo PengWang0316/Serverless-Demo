@@ -1,6 +1,10 @@
 'use strict';
 
 const fs = require('fs');
+const Mustache = require('mustache');
+const axios = require('axios');
+
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
 
 var html; // Save the html content to a global variable to reuse.
 
@@ -15,9 +19,18 @@ const loadHtml = () => {
   });
 };
 
+// Load the restaurants data
+const getRestaurants = () => axios.get(process.env.restaurants_api);
+
 // User a Lambda function to serve static content
 module.exports.handler = async (event, context, callback) => {
-  const returnHtml = await loadHtml();
+  const template = await loadHtml();
+  const restaurants = await getRestaurants();
+  const returnHtml = Mustache.render(template, {
+    dayOfWeek: days[new Date().getDay],
+    restaurants: restaurants.data.Items,
+  });
+
   const response = {
     statusCode: 200,
     body: returnHtml,
