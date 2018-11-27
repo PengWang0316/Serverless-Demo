@@ -16,6 +16,9 @@ provider:
     - Effect: Allow
       Action: dynamodb:scan
       Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
+    - Effect: Allow
+      Action: execute-api:Invoke
+      Resource: arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/*/GET/restaurants
   # apiKeys:
   #   - myFirstKey
   #   # - ${opt:stage}-myFirstKey
@@ -53,6 +56,8 @@ functions:
       - http:
           path: /restaurants/
           method: get
+          authorizer: aws_iam
+
           # private: true
     environment:
       restaurants_table: restaurants
