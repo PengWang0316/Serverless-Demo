@@ -16,6 +16,18 @@ provider:
     - Effect: Allow
       Action: dynamodb:scan
       Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
+  # apiKeys:
+  #   - myFirstKey
+  #   # - ${opt:stage}-myFirstKey
+  #   # - ${env:MY_API_KEY} # you can hide it in a serverless variable
+  # usagePlan:
+  #   quota:
+  #     limit: 5000
+  #     offset: 2
+  #     period: MONTH
+  #   throttle:
+  #     burstLimit: 200
+  #     rateLimit: 100
 
 # you can add packaging information here
 package:
@@ -41,6 +53,7 @@ functions:
       - http:
           path: /restaurants/
           method: get
+          # private: true
     environment:
       restaurants_table: restaurants
 
