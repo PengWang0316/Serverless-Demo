@@ -8,6 +8,10 @@ const URL = require('url'); // Come from node.js module
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
 
+const awsRegion = process.env.AWS_REGION; // Lambda will feed this automatically
+const cognitoUserPoolId = process.env.cognito_user_pool_id;
+const cognitoClientId = process.env.cognito_client_id;
+
 var html; // Save the html content to a global variable to reuse.
 
 // Use fs to read static html
@@ -47,6 +51,10 @@ module.exports.handler = async (event, context, callback) => {
   const returnHtml = Mustache.render(template, {
     dayOfWeek: days[new Date().getDay],
     restaurants: restaurants.data.Items,
+    awsRegion,
+    cognitoClientId,
+    cognitoUserPoolId,
+    searchUrl: `${process.env.restaurants_api}/search`,
   });
 
   const response = {

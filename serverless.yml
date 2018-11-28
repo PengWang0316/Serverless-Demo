@@ -41,6 +41,7 @@ package:
   #  - exclude-me-dir/**
 
 functions:
+
   get-index:
     handler: functions/get-index.handler
     events:
@@ -49,7 +50,10 @@ functions:
           method: get
     environment:
       restaurants_api: https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev/restaurants
+      cognito_user_pool_id: us-west-2_sYFtW8M2B
+      cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
 
+  # Internal api is protected by an IAM role. The request has be signed when call this api
   get-restaurants:
     handler: functions/get-restaurants.handler
     events:
@@ -57,8 +61,19 @@ functions:
           path: /restaurants/
           method: get
           authorizer: aws_iam
-
           # private: true
+    environment:
+      restaurants_table: restaurants
+
+  # This api is protected by the Cognit user pool. The token has to be included in the request's header when calls.
+  search-restaurants:
+    handler: functions/search-restaurants.handler
+    events:
+      - http:
+          path: /restaurants/search
+          method: post
+          authorizer:
+            arn: arn:aws:cognito-idp:us-west-2:598504753594:userpool/us-west-2_sYFtW8M2B
     environment:
       restaurants_table: restaurants
 
