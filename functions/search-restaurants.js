@@ -11,8 +11,8 @@ const fetchRestaurantsByTheme = (theme, resultNumber) => {
   const req = {
     TableName: tableName,
     Limit: resultNumber,
-    filterExpression: 'contains(themes, :theme)',
-    expressionAttributeValues: { ':theme': theme },
+    FilterExpression: 'contains(themes, :theme)',
+    ExpressionAttributeValues: { ':theme': theme },
   };
   return dynamodb.scan(req).promise();
 };

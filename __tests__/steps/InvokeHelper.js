@@ -20,7 +20,10 @@ const invokeGetIndex = () => viaHandler('get-index');
 
 const invokeGetRestaurants = () => viaHandler('get-restaurants');
 
+const invokeSearchRestaurants = theme => viaHandler('search-restaurants', { body: JSON.stringify({ theme }) });
+
 module.exports = {
   invokeGetIndex,
   invokeGetRestaurants,
+  invokeSearchRestaurants,
 };
