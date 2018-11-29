@@ -1,4 +1,6 @@
-import { invokeGetIndex } from '../steps/when';
+import cheerio from 'cheerio';
+
+import { invokeGetIndex } from '../steps/InvokeHelper';
 import initEvns from '../steps/InitialEnvs';
 
 describe('get-index: invoke the Get / endpoint', () => {
@@ -11,5 +13,9 @@ describe('get-index: invoke the Get / endpoint', () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers['Content-Type']).toBe('text/html; charset=UTF-8');
     expect(res.body).not.toBeNull();
+
+    const $ = cheerio.load(res.body);
+    const restaurants = $('.restaurant', '#restaurantsUl');
+    expect(restaurants.length).toBe(8);
   });
 });
