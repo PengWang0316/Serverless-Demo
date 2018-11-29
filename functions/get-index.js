@@ -34,13 +34,18 @@ const getRestaurants = () => {
     path: url.pathname,
   };
   aws4.sign(opts);
+
+  const headers = {
+    Host: opts.headers.Host,
+    'X-Amz-Date': opts.headers['X-Amz-Date'],
+    Authorization: opts.headers.Authorization,
+    'X-Amz-Security-Token': opts.headers['X-Amz-Security-Token'],
+  };
+  // If 'X-Amz-Security-Token' does not exsit, delete it for the local test.
+  if (!headers['X-Amz-Security-Token']) delete headers['X-Amz-Security-Token'];
+
   return axios.get(process.env.restaurants_api, {
-    headers: {
-      Host: opts.headers.Host,
-      'X-Amz-Date': opts.headers['X-Amz-Date'],
-      Authorization: opts.headers.Authorization,
-      'X-Amz-Security-Token': opts.headers['X-Amz-Security-Token'],
-    },
+    headers,
   });
 };
 
