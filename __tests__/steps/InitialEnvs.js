@@ -9,6 +9,9 @@ const init = () => new Promise((resolve, reject) => {
   process.env.cognito_client_id = '3rl1fppi7b958ahlfj9je9rk6s';
   process.env.restaurants_api = 'https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev/restaurants';
   process.env.restaurants_table = 'restaurants';
+  process.env.cognito_user_pool_id = 'us-west-2_sYFtW8M2B';
+  process.env.cognito_server_client_id = '3rl1fppi7b958ahlfj9je9rk6s';
+
   // User the awscred library to load credantial keys from the local profile.
   awscred.loadCredentials({ profile: 'voting-profile' }, (err, data) => {
     if (err) reject(err);
