@@ -4,6 +4,8 @@ const fs = require('fs');
 const Mustache = require('mustache'); // Template library.
 const axios = require('axios');
 const aws4 = require('aws4'); // Signing http request library.
+const awscred = require('awscred'); // To read the credantial keys from the local profile for the debug and testing purpose.
+
 const URL = require('url'); // Come from node.js module
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
@@ -26,13 +28,25 @@ const loadHtml = () => {
 };
 
 // Load the restaurants data
-const getRestaurants = () => {
+const getRestaurants = async () => {
   // Use AWS4 to sign the request
   const url = URL.parse(process.env.restaurants_api);
   const opts = {
     host: url.hostname,
     path: url.pathname,
   };
+
+  // TODO: will be move to a helper function for reusing.
+  // // User the awscred library to load credantial keys from the local profile.
+  if (!process.env.AWS_ACCESS_KEY_ID) await new Promise((resolve, reject) => {
+    awscred.loadCredentials({ profile: 'voting-profile' }, (err, data) => {
+      if (err) reject(err);
+      process.env.AWS_ACCESS_KEY_ID = data.accessKeyId;
+      process.env.AWS_SECRET_ACCESS_KEY = data.secretAccessKey;
+      resolve();
+    });
+  });
+
   aws4.sign(opts);
 
   const headers = {
