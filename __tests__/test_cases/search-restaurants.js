@@ -1,6 +1,6 @@
-import { invokeSearchRestaurants } from '../steps/InvokeHelper';
-import initEvns from '../steps/InitialEnvs';
-import { registerUser, deleteUser } from '../steps/CognitoUserHelper';
+import { invokeSearchRestaurants } from '../helpers/InvokeHelper';
+import initEvns from '../helpers/InitialEnvs';
+import { registerUser, deleteUser } from '../helpers/CognitoUserHelper';
 
 let user;
 

@@ -1,5 +1,5 @@
-import { invokeGetRestaurants } from '../steps/InvokeHelper';
-import initEvns from '../steps/InitialEnvs';
+import { invokeGetRestaurants } from '../helpers/InvokeHelper';
+import initEvns from '../helpers/InitialEnvs';
 
 describe('get-index: invoke the Get / endpoint', () => {
   beforeAll(async () => {
