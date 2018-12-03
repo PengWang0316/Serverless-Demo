@@ -18,7 +18,7 @@ export const registerUser = () => new Promise((resolve, reject) => {
   const lastName = chance.last();
   const username = `test-${firstName}-${lastName}-${chance.string({ length: 8 })}`;
   const password = randomPassword();
-  const email = `${firstName}-${lastName}.@serverlessdemo.com`;
+  const email = `${firstName}-${lastName}@serverlessdemo.com`;
 
   const createReq = { // Make a request for creating user with the Cognito pool.
     UserPoolId: userpoolId,
