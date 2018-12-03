@@ -6,6 +6,7 @@ service: serverless-demo # NOTE: update this with your service name
 
 plugins:
   - serverless-pseudo-parameters
+  - serverless-sam
 
 provider:
   name: aws
