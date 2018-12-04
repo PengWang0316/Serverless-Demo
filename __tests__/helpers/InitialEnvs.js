@@ -12,7 +12,7 @@ const init = () => new Promise((resolve, reject) => {
   process.env.restaurants_table = 'restaurants';
 
   // User the awscred library to load credantial keys from the local profile.
-  awscred.loadCredentials({ profile: 'voting-profile' }, (err, data) => {
+  awscred.loadCredentials((err, data) => {
     if (err) reject(err);
     process.env.AWS_ACCESS_KEY_ID = data.accessKeyId;
     process.env.AWS_SECRET_ACCESS_KEY = data.secretAccessKey;
