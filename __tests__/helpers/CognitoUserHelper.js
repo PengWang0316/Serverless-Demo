@@ -4,7 +4,9 @@ import Chance from 'chance';
 // aws.config.region = 'us-west-2';
 AWS.config.update({
   region: 'us-west-2',
-  credentials: new AWS.SharedIniFileCredentials(),
+  // credentials: new AWS.SharedIniFileCredentials({ profile: 'voting-profile' }), // When use the default profile, it is not needed.
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 const chance = new Chance();
 const cognito = new AWS.CognitoIdentityServiceProvider();
