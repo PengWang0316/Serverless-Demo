@@ -1,4 +1,4 @@
-import awscred from 'awscred';
+import awscred from '../../libs/awscred';
 
 let isInitialized = false;
 

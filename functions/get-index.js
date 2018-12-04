@@ -4,7 +4,7 @@ const fs = require('fs');
 const Mustache = require('mustache'); // Template library.
 const axios = require('axios');
 const aws4 = require('aws4'); // Signing http request library.
-const awscred = require('awscred'); // To read the credantial keys from the local profile for the debug and testing purpose.
+const awscred = require('../libs/awscred'); // To read the credantial keys from the local profile for the debug and testing purpose.
 
 const URL = require('url'); // Come from node.js module
 
