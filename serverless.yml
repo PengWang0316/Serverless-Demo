@@ -12,7 +12,7 @@ provider:
   name: aws
   runtime: nodejs8.10
   region: us-west-2
-  profile: voting-profile
+  # profile: voting-profile
   iamRoleStatements:
     - Effect: Allow
       Action: dynamodb:scan
