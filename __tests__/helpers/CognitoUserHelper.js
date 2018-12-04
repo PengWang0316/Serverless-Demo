@@ -5,8 +5,8 @@ import Chance from 'chance';
 AWS.config.update({
   region: 'us-west-2',
   // credentials: new AWS.SharedIniFileCredentials({ profile: 'voting-profile' }), // When use the default profile, it is not needed.
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID, // This env will be feeded from InitialEnvs by awscred in a test environment.
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // This env will be feeded from InitialEnvs by awscred in a test environment.
 });
 const chance = new Chance();
 const cognito = new AWS.CognitoIdentityServiceProvider();
