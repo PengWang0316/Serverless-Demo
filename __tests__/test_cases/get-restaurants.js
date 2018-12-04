@@ -3,6 +3,7 @@ import initEvns from '../helpers/InitialEnvs';
 
 describe('get-index: invoke the Get / endpoint', () => {
   beforeAll(async () => {
+    jest.setTimeout(10000); // Setup a longer timeout to allow CodeBuild fetch the credantial keys from ECS.
     await initEvns();
   });
 
