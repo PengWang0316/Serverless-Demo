@@ -16,6 +16,9 @@ const init = () => new Promise((resolve, reject) => {
     if (err) reject(err);
     process.env.AWS_ACCESS_KEY_ID = data.accessKeyId;
     process.env.AWS_SECRET_ACCESS_KEY = data.secretAccessKey;
+    // This is for the CodePipeline.
+    // When we run the code there, a temporary IAM role will be used. So we have to add it as the session token.
+    if (data.sessionToken) process.env.AWS_SESSION_TOKEN = data.sessionToken;
     isInitialized = true;
     resolve();
   });
