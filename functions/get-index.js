@@ -13,6 +13,7 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', '
 const awsRegion = process.env.AWS_REGION; // Lambda will feed this automatically
 const cognitoUserPoolId = process.env.cognito_user_pool_id;
 const cognitoClientId = process.env.cognito_client_id;
+const ordersApiRoot = process.env.orders_api;
 
 var html; // Save the html content to a global variable to reuse.
 
@@ -76,6 +77,7 @@ module.exports.handler = async (event, context, callback) => {
     awsRegion,
     cognitoClientId,
     cognitoUserPoolId,
+    placeOrderUrl: ordersApiRoot,
     searchUrl: `${process.env.restaurants_api}/search`,
   });
 
