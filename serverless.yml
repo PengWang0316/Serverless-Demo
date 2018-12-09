@@ -25,7 +25,9 @@ provider:
       Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
     - Effect: Allow
       Action: sns:Publish
-      Resource: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+      Resource: 
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
   # apiKeys:
   #   - myFirstKey
   #   # - ${opt:stage}-myFirstKey
@@ -115,6 +117,15 @@ functions:
     environment:
       order_events_stream: order-events # The event for Kinesis
 
+  notify-user:
+    handler: functions/user-notify-user.handler
+      events:
+        - stream:
+            arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
+      environment:
+        order_events_stream: order-events
+        user_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
+
 
 resources:
   Resources:
@@ -139,8 +150,16 @@ resources:
         Name: order-events
         ShardCount: 1
 
+    # SNS topic for restaurant notification
     restaurantNotificationTopic:
       Type: AWS::SNS::Topic
       Properties:
         DisplayName: restaurant-notification
         TopicName: restaurant-notification
+
+    # SNS topic for user notification
+    userNotificationTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: user-notification
+        TopicName: user-notification
