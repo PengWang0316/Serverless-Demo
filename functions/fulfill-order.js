@@ -22,6 +22,7 @@ module.exports.handler = async (event, context, callback) => {
   }).promise();
 
   console.log('published \'order_fulfilled\' event into Kinesis');
+
   callback(null, {
     statusCode: 200,
     body: JSON.stringify({ orderId }),
