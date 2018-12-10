@@ -6,7 +6,6 @@ AWS.config.update({
   accessKeyId: process.env.accessKeyId,
   secretAccessKey: process.env.secretAccessKey,
 });
-console.log(process.env.accessKeyId);
 // Create DynamoDB service object
 const ddb = new AWS.DynamoDB({ apiVersion: '2018-11-26' });
 
