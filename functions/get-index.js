@@ -23,6 +23,7 @@ const loadHtml = () => {
   return new Promise((resolve, reject) => {
     fs.readFile('static/index.html', 'utf-8', (err, data) => {
       if (err) reject(err);
+      html = data;
       resolve(data);
     });
   });
