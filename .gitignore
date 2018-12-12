@@ -8,3 +8,4 @@ jspm_packages
 # Customized
 Information.txt
 .env
+.DS_Store
