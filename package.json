@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "integrationTest": "env TEST_MODE=integration jest",
-    "acceptanceTest": "env TEST_MODE=acceptance TEST_ROOT=https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev jest"
+    "acceptanceTest": "env TEST_MODE=acceptance TEST_ROOT=https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev jest"
   },
   "author": "Kevin W.",
   "license": "MIT",
