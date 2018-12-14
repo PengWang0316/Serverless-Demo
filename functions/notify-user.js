@@ -10,7 +10,7 @@ const streamName = process.env.order_events_stream;
 
 module.exports.handler = async (event, context, callback) => {
   // Get the correct records from the event.
-  const records = getRecords(event).filter(record => record.eventType === 'order_placed');
+  const records = getRecords(event).filter(record => record.eventType === 'order_accepted');
 
   await records.forEach(async record => {
     await sns.publish({

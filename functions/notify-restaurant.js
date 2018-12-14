@@ -7,9 +7,9 @@ const retryNotifyRestaurant = require('../libs/retry-notify-restaurant');
 module.exports.handler = async (event, context, callback) => {
   // Get records from the event and keep the order_placed event
   const orders = getRecords(event).filter(record => record.eventType === 'order_placed');
-  orders.forEach(order => {
+  await orders.forEach(async order => {
     try {
-      notifyRestaurant(order);
+      await notifyRestaurant(order);
     } catch (err) {
       retryNotifyRestaurant(order);
     }

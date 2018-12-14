@@ -7,8 +7,11 @@ const sns = new AWS.SNS();
 const streamName = process.env.order_events_stream;
 const restaurantTopicArn = process.env.restaurant_notification_topic;
 
+const chance = require('chance').Chance();
 
 module.exports = async order => {
+  if (chance.bool({ likelihood: 75 })) throw new Error('boom'); // Create a 75% of failure for testing purpose
+
   const pubReq = {
     Message: JSON.stringify(order),
     TopicArn: restaurantTopicArn,
