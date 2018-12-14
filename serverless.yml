@@ -27,6 +27,8 @@ provider:
       Action: sns:Publish
       Resource: 
         - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification-dlq
+        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:retry-restaurant-notification
         - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
   # apiKeys:
   #   - myFirstKey
@@ -58,8 +60,8 @@ functions:
           path: /
           method: get
     environment:
-      restaurants_api: https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev/restaurants
-      orders_api: https://ztk1mf3sjc.execute-api.us-west-2.amazonaws.com/dev/orders
+      restaurants_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/restaurants
+      orders_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/orders
       cognito_user_pool_id: us-west-2_sYFtW8M2B
       cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
 
@@ -107,6 +109,17 @@ functions:
     environment:
       order_events_stream: order-events
       restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+      retry_restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:retry-restaurant-notification
+
+  # The function handles renotify the restaurant
+  retry-notify-restaurant:
+    handler: functions/retry-notify-restaurant.handler
+    events:
+      - sns: retry-restaurant-notification # The Serverless framework will create this sns topic automatically.
+    environment:
+      order_events_stream: order-events
+      restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+    onError: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification-dlq
 
   accept-order:
     handler: functions/accept-order.handler
@@ -118,13 +131,13 @@ functions:
       order_events_stream: order-events # The event for Kinesis
 
   notify-user:
-    handler: functions/user-notify-user.handler
-      events:
-        - stream:
-            arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
-      environment:
-        order_events_stream: order-events
-        user_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
+    handler: functions/notify-user.handler
+    events:
+      - stream:
+          arn: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
+    environment:
+      order_events_stream: order-events
+      user_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
 
   fulfill-order:
     handler: functions/fulfill-order.handler
@@ -172,3 +185,10 @@ resources:
       Properties:
         DisplayName: user-notification
         TopicName: user-notification
+
+    # SNS topic for the notifcation dead line queue
+    restaurantNotificationDLQTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: restaurant-notification-dlq
+        TopicName: restaurant-notification-dlq
