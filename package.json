@@ -18,7 +18,9 @@
       "__tests__/debug_events/"
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "chance": "^1.0.18"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
@@ -29,7 +31,6 @@
     "axios": "^0.18.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "chance": "^1.0.17",
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^6.1.0",
     "eslint": "^5.9.0",
