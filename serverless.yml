@@ -6,6 +6,7 @@ service: serverless-demo # NOTE: update this with your service name
 
 plugins:
   - serverless-pseudo-parameters
+  - serverless-iam-roles-per-function
   - serverless-sam
 
 provider:
@@ -13,23 +14,6 @@ provider:
   runtime: nodejs8.10
   region: us-west-2
   # profile: voting-profile
-  iamRoleStatements:
-    - Effect: Allow
-      Action: dynamodb:scan
-      Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
-    - Effect: Allow
-      Action: execute-api:Invoke
-      Resource: arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/*/GET/restaurants
-    - Effect: Allow
-      Action: kinesis:PutRecord
-      Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
-    - Effect: Allow
-      Action: sns:Publish
-      Resource: 
-        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
-        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification-dlq
-        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:retry-restaurant-notification
-        - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
   # apiKeys:
   #   - myFirstKey
   #   # - ${opt:stage}-myFirstKey
@@ -64,6 +48,10 @@ functions:
       orders_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/orders
       cognito_user_pool_id: us-west-2_sYFtW8M2B
       cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
+    iamRoleStatements:
+      - Effect: Allow
+        Action: execute-api:Invoke
+        Resource: arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/*/GET/restaurants
 
   # Internal api is protected by an IAM role. The request has be signed when call this api
   get-restaurants:
@@ -76,6 +64,10 @@ functions:
           # private: true
     environment:
       restaurants_table: restaurants
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:scan
+        Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
 
   # This api is protected by the Cognit user pool. The token has to be included in the request's header when calls.
   search-restaurants:
@@ -88,6 +80,11 @@ functions:
             arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
     environment:
       restaurants_table: restaurants
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:scan
+        Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/restaurants
+
   
   place-order:
     handler: functions/place-order.handler
@@ -99,6 +96,10 @@ functions:
             arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
     environment:
       order_events_stream: order-events # The event for Kinesis
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
 
   # The function is driven by the Kinesis stream
   notify-restaurant:
@@ -110,6 +111,15 @@ functions:
       order_events_stream: order-events
       restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
       retry_restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:retry-restaurant-notification
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
+      - Effect: Allow
+        Action: sns:Publish
+        Resource: 
+          - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
+          - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:retry-restaurant-notification
 
   # The function handles renotify the restaurant
   retry-notify-restaurant:
@@ -120,6 +130,14 @@ functions:
       order_events_stream: order-events
       restaurant_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
     onError: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification-dlq
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
+      - Effect: Allow
+        Action: sns:Publish
+        Resource: 
+          - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:restaurant-notification
 
   accept-order:
     handler: functions/accept-order.handler
@@ -129,6 +147,10 @@ functions:
           method: post
     environment:
       order_events_stream: order-events # The event for Kinesis
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
 
   notify-user:
     handler: functions/notify-user.handler
@@ -138,6 +160,14 @@ functions:
     environment:
       order_events_stream: order-events
       user_notification_topic: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
+      - Effect: Allow
+          Action: sns:Publish
+          Resource: 
+            - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification  
 
   fulfill-order:
     handler: functions/fulfill-order.handler
@@ -147,6 +177,10 @@ functions:
           method: post
     environment:
       order_events_stream: order-events
+    iamRoleStatements:
+      - Effect: Allow
+        Action: kinesis:PutRecord
+        Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
 
 
 resources:
