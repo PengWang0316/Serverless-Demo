@@ -8,7 +8,7 @@ const LogLevels = {
 };
 
 // default to debug if not specified
-const logLevelName = process.env.log_level || 'DEBUG';
+const logLevelName = () => process.env.log_level || 'DEBUG';
 
 /**
  * Check whether should log out based on log level setting up
@@ -16,7 +16,7 @@ const logLevelName = process.env.log_level || 'DEBUG';
  * @return {bool} return true if should log out
  */
 function isEnabled(level) {
-  return level >= LogLevels[logLevelName];
+  return level >= LogLevels[logLevelName()];
 }
 
 /**
