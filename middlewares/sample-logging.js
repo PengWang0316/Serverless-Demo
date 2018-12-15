@@ -1,5 +1,7 @@
 'use strict';
 
+const log = require('../libs/log');
+
 module.exports = ({ sampleRate }) => {
   let logLevel;
   return {
@@ -13,6 +15,12 @@ module.exports = ({ sampleRate }) => {
     after: (handler, next) => {
       if (logLevel) process.env.log_level = logLevel;
       next();
+    },
+    onError: (handler, next) => { // Handle the error.
+      const { awsRequestId } = handler.context;
+      const invocationEvent = JSON.stringify(handler.event);
+      log.error('Invocation failed', { awsRequestId, invocationEvent }, handler.error);
+      next(handler.error);
     },
   };
 };
