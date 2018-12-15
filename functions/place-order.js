@@ -3,15 +3,20 @@
 const AWS = require('aws-sdk');
 const chance = require('chance').Chance();
 
+const log = require('../libs/log');
+
 const kinesis = new AWS.Kinesis();
 const streamName = process.env.order_events_stream;
 
 module.exports.handler = async (event, context, callback) => {
-  const { restaurantName } = JSON.parse(event.body);
+  const body = JSON.parse(event.body);
+  log.debug('request body is a valid JSON', { requestBody: body });
+
+  const { restaurantName } = body;
   const { email } = event.requestContext.authorizer.claims; // Get the email address from the Cognito user.
   const orderId = chance.guid(); // Generate a uuid for the oder id.
 
-  console.log(`Placing an oder ${orderId} to ${restaurantName} for user ${email}`);
+  log.debug('Placing an oder...', { orderId, restaurantName, email });
 
   const data = {
     restaurantName,
@@ -26,7 +31,7 @@ module.exports.handler = async (event, context, callback) => {
     StreamName: streamName,
   };
   await kinesis.putRecord(putReq).promise();
-  console.log('Published order_placed event to Kinesis.');
+  log.debug('Published event to Kinesis...', { eventName: 'order_placed' });
 
   const response = {
     statusCode: 200,

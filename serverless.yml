@@ -9,10 +9,18 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-sam
 
+custom: # stage and logLevel for log function
+  stage: ${opt:stage, self:provider.stage} # use stage or get if from the provider.stage. The second paramter is default
+  logLevel:
+    prod: WARN
+    default: DEBUG
+
 provider:
   name: aws
   runtime: nodejs8.10
   region: us-west-2
+  environment:
+    log_level: ${self:custom.logLevel.${self:custom.stage}, self:custome.logLevel.default} # The variable for the log function
   # profile: voting-profile
   # apiKeys:
   #   - myFirstKey
