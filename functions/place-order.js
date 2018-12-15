@@ -41,5 +41,5 @@ const handler = async (event, context, callback) => {
   };
   callback(null, response);
 };
-// Use a middleware to change the log level with 20% chance.
-module.exports = middy(handler).use(sampleLogging({ sampleRate: 0.2 }));
+// Use a middleware to change the log level with 1% chance.
+module.exports = middy(handler).use(sampleLogging({ sampleRate: 0.01 }));
