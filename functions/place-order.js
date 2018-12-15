@@ -2,13 +2,15 @@
 
 const AWS = require('aws-sdk');
 const chance = require('chance').Chance();
+const middy = require('middy');
 
 const log = require('../libs/log');
+const sampleLogging = require('../middlewares/sample-logging'); // A middleware for change the log_level based on a sample rate
 
 const kinesis = new AWS.Kinesis();
 const streamName = process.env.order_events_stream;
 
-module.exports.handler = async (event, context, callback) => {
+const handler = async (event, context, callback) => {
   const body = JSON.parse(event.body);
   log.debug('request body is a valid JSON', { requestBody: body });
 
@@ -39,3 +41,5 @@ module.exports.handler = async (event, context, callback) => {
   };
   callback(null, response);
 };
+// Use a middleware to change the log level with 20% chance.
+module.exports = middy(handler).use(sampleLogging({ sampleRate: 0.2 }));
