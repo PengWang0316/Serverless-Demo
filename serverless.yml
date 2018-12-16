@@ -14,6 +14,8 @@ custom: # stage and logLevel for log function
   logLevel:
     prod: WARN
     default: DEBUG
+  serverless-iam-roles-per-function:
+    defaultInherit: true # All function will inherit from the provider's IAM role.
 
 provider:
   name: aws
@@ -21,7 +23,11 @@ provider:
   region: us-west-2
   environment:
     log_level: ${self:custom.logLevel.${self:custom.stage}, self:custome.logLevel.default} # The variable for the log function
-  # profile: voting-profile
+  iamRoleStatements:
+    - Effect: Allow
+      Action: cloudwatch:PutMetricData
+      Resource: '*'
+    # profile: voting-profile
   # apiKeys:
   #   - myFirstKey
   #   # - ${opt:stage}-myFirstKey
