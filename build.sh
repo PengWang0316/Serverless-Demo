@@ -28,7 +28,8 @@ elif [ "$1" = "deploy" ] && [ $# -eq 2 ]; then
   # npm install
   cd functions
   npm install
-  'node_modules/.bin/sls' deploy -s $STAGE
+  cd ..
+  # 'node_modules/.bin/sls' deploy -s $STAGE
 else
   instruction
   exit 1
