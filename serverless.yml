@@ -5,8 +5,9 @@ service: serverless-demo # NOTE: update this with your service name
 # frameworkVersion: "=X.X.X"
 
 plugins:
-  - serverless-pseudo-parameters
-  - serverless-iam-roles-per-function
+  - serverless-pseudo-parameters # Read the region and accout id
+  - serverless-iam-roles-per-function # Set up IAM role for each function
+  - serverless-plugin-tracing # Integrate the X-Ray
   - serverless-sam
 
 custom: # stage and logLevel for log function
@@ -21,11 +22,17 @@ provider:
   name: aws
   runtime: nodejs8.10
   region: us-west-2
+  tracing: true # Use the serverless-plugin-tracing plugin to enable the X-Ray
   environment:
     log_level: ${self:custom.logLevel.${self:custom.stage}, self:custome.logLevel.default} # The variable for the log function
   iamRoleStatements:
     - Effect: Allow
       Action: cloudwatch:PutMetricData
+      Resource: '*'
+    - Effect: Allow # Give the permission to operate the X-Ray 
+      Action: 
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
       Resource: '*'
     # profile: voting-profile
   # apiKeys:
@@ -220,6 +227,7 @@ functions:
       environment:
         alarm_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
         ok_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
+      tracing: false # Use the serverless-plugin-tracing plugin to disable the X-Ray
       iamRoleStatements:
         - Effect: Allow
           Action: apigateway:GET # Get information from the API gateway
