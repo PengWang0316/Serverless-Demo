@@ -9,7 +9,6 @@
   "author": "Kevin W.",
   "license": "MIT",
   "dependencies": {
-    "aws-xray-sdk": "^2.1.0",
     "aws4": "^1.8.0",
     "awscred": "^1.4.2",
     "axios": "^0.18.0",
