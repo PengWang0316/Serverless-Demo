@@ -217,6 +217,23 @@ functions:
                 - apigateway.amazonaws.com
               eventName:
                 - CreateDeployment
+      environment:
+        alarm_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
+        ok_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
+      iamRoleStatements:
+        - Effect: Allow
+          Action: apigateway:GET # Get information from the API gateway
+          Resource:
+            - arn:aws:apigateway:#{AWS::Region}::/restapis/*
+            - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
+        - Effect: Allow
+          Action: apigateway:PATCH # Update the stage
+          Resource:
+            - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
+        - Effect: Allow
+          Action: cloudwatch:PutMetricAlarm # Create the CloudWatch alarm
+          Resource:
+            - "*"
 
 resources:
   Resources:
