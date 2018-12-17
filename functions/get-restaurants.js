@@ -2,6 +2,8 @@
 
 const AWS = require('aws-sdk');
 
+const cloudwatch = require('../libs/cloudwatch');
+
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 const defaultResults = process.env.defaultResults || 8;
@@ -16,10 +18,11 @@ const fetchRestaurants = resultNumber => {
 };
 
 module.exports.handler = async (event, context, callback) => {
-  const restaurants = await fetchRestaurants(defaultResults);
+  const restaurants = await cloudwatch.trackExecTime('DynamoDBScanLatency', () => fetchRestaurants(defaultResults));
   const response = {
     statusCode: 200,
     body: JSON.stringify(restaurants),
   };
+  cloudwatch.incrCount('RestaurantsReturned', restaurants.length);
   callback(null, response);
 };

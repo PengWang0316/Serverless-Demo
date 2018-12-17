@@ -5,8 +5,9 @@ const Mustache = require('mustache'); // Template library.
 const axios = require('axios');
 const aws4 = require('aws4'); // Signing http request library.
 const awscred = require('awscred'); // To read the credantial keys from the local profile for the debug and testing purpose.
-
 const URL = require('url'); // Come from node.js module
+
+const cloudwatch = require('../libs/cloudwatch'); // Use this library to record metrics
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
 
@@ -71,7 +72,8 @@ const getRestaurants = async () => {
 // User a Lambda function to serve static content
 module.exports.handler = async (event, context, callback) => {
   const template = await loadHtml();
-  const restaurants = await getRestaurants();
+  // Use cloudwatch library to record metrics asynchronously
+  const restaurants = await cloudwatch.trackExecTime('GetRestaurantsLatency', () => getRestaurants());
   const returnHtml = Mustache.render(template, {
     dayOfWeek: days[new Date().getDay],
     restaurants: restaurants.data.Items,
@@ -81,6 +83,8 @@ module.exports.handler = async (event, context, callback) => {
     placeOrderUrl: ordersApiRoot,
     searchUrl: `${process.env.restaurants_api}/search`,
   });
+
+  cloudwatch.incrCount('RestaurantsReturned', restaurants.length);
 
   const response = {
     statusCode: 200,

@@ -6,6 +6,7 @@ const middy = require('middy');
 
 const log = require('../libs/log');
 const sampleLogging = require('../middlewares/sample-logging'); // A middleware for change the log_level based on a sample rate
+const cloudwatch = require('../libs/cloudwatch');
 
 const kinesis = new AWS.Kinesis();
 const streamName = process.env.order_events_stream;
@@ -32,7 +33,7 @@ const handler = async (event, context, callback) => {
     PartitionKey: orderId,
     StreamName: streamName,
   };
-  await kinesis.putRecord(putReq).promise();
+  await cloudwatch.trackExecTime('KinesisPutRecordLatency', () => kinesis.putRecord(putReq).promise());
   log.debug('Published event to Kinesis...', { eventName: 'order_placed' });
 
   const response = {
