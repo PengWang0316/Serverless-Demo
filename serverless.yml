@@ -62,6 +62,7 @@ functions:
       orders_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/orders
       cognito_user_pool_id: us-west-2_sYFtW8M2B
       cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: execute-api:Invoke
@@ -78,6 +79,7 @@ functions:
           # private: true
     environment:
       restaurants_table: restaurants
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:scan
@@ -94,6 +96,7 @@ functions:
             arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
     environment:
       restaurants_table: restaurants
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:scan
@@ -110,6 +113,7 @@ functions:
             arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
     environment:
       order_events_stream: order-events # The event for Kinesis
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: kinesis:PutRecord
@@ -161,6 +165,7 @@ functions:
           method: post
     environment:
       order_events_stream: order-events # The event for Kinesis
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: kinesis:PutRecord
@@ -191,11 +196,27 @@ functions:
           method: post
     environment:
       order_events_stream: order-events
+      async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
         Action: kinesis:PutRecord
         Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
 
+  # This function will be called every time when we deploy to the apigateway
+  auto-create-api-alarms:
+    handler: functions/create-alarms.handler
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - aws.apigateway
+            detail-type:
+              - AWS API Call via CloudTrail
+            detail:
+              eventSource:
+                - apigateway.amazonaws.com
+              eventName:
+                - CreateDeployment
 
 resources:
   Resources:
