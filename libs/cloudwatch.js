@@ -1,6 +1,5 @@
 'use strict';
 
-const co = require('co');
 const AWSXray = require('aws-xray-sdk');
 const AWS = AWSXray.captureAWS(require('aws-sdk')); // Use the X-Ray to capture all request makes through AWS sdk
 
@@ -24,34 +23,31 @@ const dimensions = [
 let countMetrics = {};
 let timeMetrics = {};
 
-function getCountMetricData(name, value) {
-  return {
-    MetricName: name,
-    Dimensions: dimensions,
-    Unit: 'Count',
-    Value: value,
-  };
-}
+const getCountMetricData = (name, value) => ({
+  MetricName: name,
+  Dimensions: dimensions,
+  Unit: 'Count',
+  Value: value,
+});
 
-function getTimeMetricData(name, statsValues) {
-  return {
-    MetricName: name,
-    Dimensions: dimensions,
-    Unit: 'Milliseconds',
-    StatisticValues: statsValues,
-  };
-}
+const getTimeMetricData = (name, statsValues) => ({
+  MetricName: name,
+  Dimensions: dimensions,
+  Unit: 'Milliseconds',
+  StatisticValues: statsValues,
+});
 
-function getCountMetricDatum() {
+
+const getCountMetricDatum = () => {
   const keys = Object.keys(countMetrics);
   if (keys.length === 0) return [];
 
   const metricDatum = keys.map(key => getCountMetricData(key, countMetrics[key]));
   countMetrics = {}; // zero out the recorded count metrics
   return metricDatum;
-}
+};
 
-function getTimeMetricDatum() {
+const getTimeMetricDatum = () => {
   const keys = Object.keys(timeMetrics);
   if (keys.length === 0) {
     return [];
@@ -60,9 +56,9 @@ function getTimeMetricDatum() {
   const metricDatum = keys.map(key => getTimeMetricData(key, timeMetrics[key]));
   timeMetrics = {}; // zero out the recorded time metrics
   return metricDatum;
-}
+};
 
-const flush = co.wrap(function* () {
+const flush = async () => {
   const countDatum = getCountMetricDatum();
   const timeDatum = getTimeMetricDatum();
   const allDatum = countDatum.concat(timeDatum);
@@ -78,19 +74,19 @@ const flush = co.wrap(function* () {
   };
 
   try {
-    yield cloudwatch.putMetricData(params).promise();
+    await cloudwatch.putMetricData(params).promise();
     log.debug(`flushed [${allDatum.length}] metrics to CloudWatch: ${metricNames}`);
   } catch (err) {
     log.warn(`cloudn't flush [${allDatum.length}] CloudWatch metrics`, null, err);
   }
-});
+};
 
-function clear() {
+const clear = () => {
   countMetrics = {};
   timeMetrics = {};
-}
+};
 
-function incrCount(metricName, count) {
+const incrCount = (metricName, count) => {
   count = count || 1;
 
   // If under the async mode, use console.log to send a formated data to CloudWatch
@@ -101,9 +97,9 @@ function incrCount(metricName, count) {
   } else {
     countMetrics[metricName] = count;
   }
-}
+};
 
-function recordTimeInMillis(metricName, ms) {
+const recordTimeInMillis = (metricName, ms) => {
   if (!ms) {
     return;
   }
@@ -126,9 +122,9 @@ function recordTimeInMillis(metricName, ms) {
     };
     timeMetrics[metricName] = statsValues;
   }
-}
+};
 
-function trackExecTime(metricName, f) {
+const trackExecTime = (metricName, f) => {
   if (!f || typeof f !== 'function') {
     throw new Error('cloudWatch.trackExecTime requires a function, eg. () => 42');
   }
@@ -143,7 +139,7 @@ function trackExecTime(metricName, f) {
 
   // anything with a 'then' function can be considered a Promise...
   // http://stackoverflow.com/a/27746324/55074
-  if (!res.hasOwnProperty('then')) {
+  if (!Object.prototype.hasOwnProperty.call(res, 'then')) {
     end = new Date().getTime();
     recordTimeInMillis(metricName, end - start);
     return res;
@@ -153,7 +149,7 @@ function trackExecTime(metricName, f) {
     recordTimeInMillis(metricName, end - start);
     return x;
   });
-}
+};
 
 module.exports = {
   flush,
