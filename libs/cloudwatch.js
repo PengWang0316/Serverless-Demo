@@ -1,7 +1,9 @@
 'use strict';
 
 const co = require('co');
-const AWS = require('aws-sdk');
+const AWSXray = require('aws-xray-sdk');
+const AWS = AWSXray.captureAWS(require('aws-sdk')); // Use the X-Ray to capture all request makes through AWS sdk
+
 const log = require('./log');
 
 const cloudwatch = new AWS.CloudWatch();
@@ -93,13 +95,11 @@ function incrCount(metricName, count) {
 
   // If under the async mode, use console.log to send a formated data to CloudWatch
   // The format is MONITORING|value|unit|name|namespace|dimensions1, dimension2, ...
-  if(isAsyncMode) console.log(`MONITORING|${count}|count|${metricName}|${namespace}`);
-  else {
-    if (countMetrics[metricName]) {
-      countMetrics[metricName] += count;
-    } else {
-      countMetrics[metricName] = count;
-    }
+  if (isAsyncMode) console.log(`MONITORING|${count}|count|${metricName}|${namespace}`);
+  else if (countMetrics[metricName]) {
+    countMetrics[metricName] += count;
+  } else {
+    countMetrics[metricName] = count;
   }
 }
 
@@ -111,22 +111,20 @@ function recordTimeInMillis(metricName, ms) {
   log.debug(`new execution time for [${metricName}] : ${ms} milliseconds`);
 
   if (isAsyncMode) console.log(`MONITORING|${ms}|milliseconds|${metricName}|${namespace}`);
-  else {
-    if (timeMetrics[metricName]) {
-      const metric = timeMetrics[metricName];
-      metric.Sum += ms;
-      metric.Maximum = Math.max(metric.Maximum, ms);
-      metric.Minimum = Math.min(metric.Minimum, ms);
-      metric.SampleCount += 1;
-    } else {
-      const statsValues = {
-        Maximum: ms,
-        Minimum: ms,
-        SampleCount: 1,
-        Sum: ms,
-      };
-      timeMetrics[metricName] = statsValues;
-    }
+  else if (timeMetrics[metricName]) {
+    const metric = timeMetrics[metricName];
+    metric.Sum += ms;
+    metric.Maximum = Math.max(metric.Maximum, ms);
+    metric.Minimum = Math.min(metric.Minimum, ms);
+    metric.SampleCount += 1;
+  } else {
+    const statsValues = {
+      Maximum: ms,
+      Minimum: ms,
+      SampleCount: 1,
+      Sum: ms,
+    };
+    timeMetrics[metricName] = statsValues;
   }
 }
 
