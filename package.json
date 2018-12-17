@@ -20,16 +20,20 @@
   },
   "dependencies": {
     "aws-xray-sdk": "^2.1.0",
-    "chance": "^1.0.18"
+    "aws4": "^1.8.0",
+    "awscred": "^1.4.2",
+    "axios": "^0.18.0",
+    "chance": "^1.0.18",
+    "fs": "0.0.1-security",
+    "lodash": "^4.17.11",
+    "middy": "^0.19.4",
+    "mustache": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
     "@babel/runtime": "^7.2.0",
     "aws-sdk": "^2.369.0",
-    "aws4": "^1.8.0",
-    "awscred": "^1.4.2",
-    "axios": "^0.18.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "cheerio": "^1.0.0-rc.2",
@@ -40,7 +44,6 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
     "jest": "^23.6.0",
-    "mustache": "^3.0.1",
     "serverless": "^1.34.1",
     "serverless-iam-roles-per-function": "^1.0.4",
     "serverless-plugin-tracing": "^2.0.0",

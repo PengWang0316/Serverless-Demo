@@ -8,7 +8,7 @@ plugins:
   - serverless-pseudo-parameters # Read the region and accout id
   - serverless-iam-roles-per-function # Set up IAM role for each function
   - serverless-plugin-tracing # Integrate the X-Ray
-  - serverless-sam
+  # - serverless-sam
 
 custom: # stage and logLevel for log function
   stage: ${opt:stage, self:provider.stage} # use stage or get if from the provider.stage. The second paramter is default
