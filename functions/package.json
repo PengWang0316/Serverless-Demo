@@ -9,10 +9,12 @@
   "author": "Kevin W.",
   "license": "MIT",
   "dependencies": {
+    "aws-xray-sdk": "^2.1.0",
     "aws4": "^1.8.0",
     "awscred": "^1.4.2",
     "axios": "^0.18.0",
     "fs": "0.0.1-security",
+    "lodash": "^4.17.11",
     "middy": "^0.19.4",
     "mustache": "^3.0.1"
   },
