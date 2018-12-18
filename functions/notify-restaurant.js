@@ -22,4 +22,4 @@ const handler = async (event, context, callback) => {
   callback(null, 'All done');
 };
 // Use the flush metric middleware to send metrics we collect from libs/notify-restaurant to the CloudWatch
-module.exports.handler = middy(handler).use(sampleLoggin).use(flushMetrics);
+module.exports.handler = middy(handler).use(sampleLoggin({ sampleRate: 0.01 })).use(flushMetrics);
