@@ -26,9 +26,7 @@ elif [ "$1" = "deploy" ] && [ $# -eq 2 ]; then
   STAGE=$2
 
   # npm install
-  cd functions
   npm install
-  cd ..
   # 'node_modules/.bin/sls' deploy -s $STAGE
 else
   instruction
