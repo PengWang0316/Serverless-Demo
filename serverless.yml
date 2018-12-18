@@ -65,8 +65,8 @@ functions:
           path: /
           method: get
     environment:
-      restaurants_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/restaurants
-      orders_api: https://bt0pmacdcc.execute-api.us-west-2.amazonaws.com/dev/orders
+      restaurants_api: https://c9qowoe6gd.execute-api.us-west-2.amazonaws.com/dev/restaurants
+      orders_api: https://c9qowoe6gd.execute-api.us-west-2.amazonaws.com/dev/orders
       cognito_user_pool_id: us-west-2_sYFtW8M2B
       cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
@@ -191,9 +191,9 @@ functions:
         Action: kinesis:PutRecord
         Resource: arn:aws:kinesis:#{AWS::Region}:#{AWS::AccountId}:stream/order-events
       - Effect: Allow
-          Action: sns:Publish
-          Resource: 
-            - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification  
+        Action: sns:Publish
+        Resource: 
+          - arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:user-notification  
 
   fulfill-order:
     handler: functions/fulfill-order.handler
@@ -224,24 +224,24 @@ functions:
                 - apigateway.amazonaws.com
               eventName:
                 - CreateDeployment
-      environment:
-        alarm_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
-        ok_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
-      tracing: false # Use the serverless-plugin-tracing plugin to disable the X-Ray
-      iamRoleStatements:
-        - Effect: Allow
-          Action: apigateway:GET # Get information from the API gateway
-          Resource:
-            - arn:aws:apigateway:#{AWS::Region}::/restapis/*
-            - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
-        - Effect: Allow
-          Action: apigateway:PATCH # Update the stage
-          Resource:
-            - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
-        - Effect: Allow
-          Action: cloudwatch:PutMetricAlarm # Create the CloudWatch alarm
-          Resource:
-            - "*"
+    environment:
+      alarm_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
+      ok_actions: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:Notify
+    tracing: false # Use the serverless-plugin-tracing plugin to disable the X-Ray
+    iamRoleStatements:
+      - Effect: Allow
+        Action: apigateway:GET # Get information from the API gateway
+        Resource:
+          - arn:aws:apigateway:#{AWS::Region}::/restapis/*
+          - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
+      - Effect: Allow
+        Action: apigateway:PATCH # Update the stage
+        Resource:
+          - arn:aws:apigateway:#{AWS::Region}::/restapis/*/stages/${self:custom.stage}
+      - Effect: Allow
+        Action: cloudwatch:PutMetricAlarm # Create the CloudWatch alarm
+        Resource:
+          - "*"
 
 resources:
   Resources:
