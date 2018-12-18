@@ -1,6 +1,6 @@
 'use strict';
 
-const AWSXray = require('aws-xray-sdk');
+// const AWSXray = require('aws-xray-sdk');
 const fs = require('fs');
 const Mustache = require('mustache'); // Template library.
 const axios = require('axios');
