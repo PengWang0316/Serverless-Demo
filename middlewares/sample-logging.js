@@ -2,11 +2,12 @@
 
 const log = require('../libs/log');
 
-module.exports = ({ sampleRate }) => {
+module.exports = (option = { sampleRate: 0.01 }) => { // The defualt sample rate is 1%
   let logLevel;
+  const { sampleRate } = option;
   return {
     before: (handler, next) => {
-      if (sampleRate && (Math.random() <= sampleRate)) {
+      if (Math.random() <= sampleRate) {
         logLevel = process.env.log_level;
         process.env.log_level = 'DEBUG';
       }
