@@ -24,7 +24,7 @@ module.exports.handler = async (event, context, callback) => {
     data.eventType = 'user_notified';
     await kinesis.putRecord({
       Data: JSON.stringify(data),
-      PartitionKey: record.id,
+      PartitionKey: record.orderId,
       StreamName: streamName,
     }).promise();
     console.log('Published \'user_notified\' event to Kinesis.');
