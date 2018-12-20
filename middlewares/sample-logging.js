@@ -1,19 +1,19 @@
 'use strict';
 
 const log = require('../libs/log');
-const correlationIds = require('../libs/correlation-ids');
+// const correlationIds = require('../libs/correlation-ids');
 
 module.exports = (option = { sampleRate: 0.01 }) => { // The defualt sample rate is 1%
   let logLevel;
   const { sampleRate } = option;
 
-  const isDebugEnabled = () => {
-    return correlationIds.get()['Debug-Log-Enabled'] === 'true' ? true : Math.random() <= sampleRate;
-  };
+  // const isDebugEnabled = () => {
+  //   return correlationIds.get()['Debug-Log-Enabled'] === 'true' ? true : Math.random() <= sampleRate;
+  // };
 
   return {
     before: (handler, next) => {
-      if (isDebugEnabled()) {
+      if (Math.random() <= sampleRate) {
         logLevel = process.env.log_level;
         process.env.log_level = 'DEBUG';
       }

@@ -1,6 +1,6 @@
 'use strict';
 
-const correlationIds = require('./correlation-ids');
+// const correlationIds = require('./correlation-ids');
 
 const LogLevels = {
   DEBUG: 0,
@@ -13,21 +13,21 @@ const LogLevels = {
  * Some information we want to include in the log
  * The full list of Lambda environment variables see here https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html
 */
-const DEFAULT_CONTEXT = {
-  awsRegion: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION,
-  functionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
-  functionVersion: process.env.AWS_LAMBDA_FUNCTION_VERSION,
-  functionMemorySize: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE,
-  state: process.env.ENVIRONMENT || process.env.STAGE,
-};
+// const DEFAULT_CONTEXT = {
+//   awsRegion: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION,
+//   functionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
+//   functionVersion: process.env.AWS_LAMBDA_FUNCTION_VERSION,
+//   functionMemorySize: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE,
+//   state: process.env.ENVIRONMENT || process.env.STAGE,
+// };
 
 /*
  * Get the context from the gloab variable and put the new contexts we collect
 */
-const getContext = () => {
-  const context = correlationIds.get();
-  return context ? { ...DEFAULT_CONTEXT, ...context } : context;
-};
+// const getContext = () => {
+//   const context = correlationIds.get();
+//   return context ? { ...DEFAULT_CONTEXT, ...context } : context;
+// };
 
 // default to debug if not specified
 const logLevelName = () => process.env.log_level || 'DEBUG';
@@ -67,7 +67,7 @@ function log(levelName, message, params) {
     return;
   }
 
-  const logMsg = { ...getContext(), ...params };
+  const logMsg = { ...params };
   logMsg.level = levelName;
   logMsg.message = message;
 
