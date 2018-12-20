@@ -25,6 +25,7 @@ provider:
   tracing: true # Use the serverless-plugin-tracing plugin to enable the X-Ray
   environment:
     log_level: ${self:custom.logLevel.${self:custom.stage}, self:custome.logLevel.default} # The variable for the log function
+    STAGE: ${self:custom.stage} # For DEFAULT_CONTEXT in log.js
   iamRoleStatements:
     - Effect: Allow
       Action: cloudwatch:PutMetricData
@@ -65,8 +66,8 @@ functions:
           path: /
           method: get
     environment:
-      restaurants_api: https://c9qowoe6gd.execute-api.us-west-2.amazonaws.com/dev/restaurants
-      orders_api: https://c9qowoe6gd.execute-api.us-west-2.amazonaws.com/dev/orders
+      restaurants_api: https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev/restaurants
+      orders_api: https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev/orders
       cognito_user_pool_id: us-west-2_sYFtW8M2B
       cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
@@ -171,7 +172,7 @@ functions:
           path: /orders/accept
           method: post
     environment:
-      order_events_stream: order-events # The event for Kinesis
+      order_events_stream: order-events
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
