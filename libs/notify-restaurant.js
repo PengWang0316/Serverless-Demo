@@ -3,7 +3,7 @@
 const AWSXray = require('aws-xray-sdk');
 const AWS = AWSXray.captureAWS(require('aws-sdk')); // Use the X-Ray to capture all request makes through AWS sdk
 
-const cloudwatch = require('../libs/cloudwatch'); // Use this library to put some metrics in
+const cloudwatch = require('./cloudwatch'); // Use this library to put some metrics in
 
 const kinesis = new AWS.Kinesis();
 const sns = new AWS.SNS();
@@ -21,7 +21,7 @@ module.exports = async order => {
     };
     // await sns.publish(pubReq).promise(); // Publish to the sns
     // Put the sns executing time to the cloudwatch function and wait to flush
-    await cloudwatch.trackExecTime('SnsPublishLatency', () => sns.putRecord(pubReq).promise());
+    await cloudwatch.trackExecTime('SnsPublishLatency', () => sns.publish(pubReq).promise());
 
     console.log(`Notified the restaurant [${order.restaurantName}] of order [${order.orderId}]`);
 
