@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "integrationTest": "env TEST_MODE=integration jest",
+    "integrationTest": "env AWS_XRAY_CONTEXT_MISSING=LOG_ERROR TEST_MODE=integration jest",
     "acceptanceTest": "env TEST_MODE=acceptance TEST_ROOT=https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev jest"
   },
   "author": "Kevin W.",
