@@ -7,7 +7,10 @@ const axios = require('axios');
 const aws4 = require('aws4'); // Signing http request library.
 const awscred = require('awscred'); // To read the credantial keys from the local profile for the debug and testing purpose.
 const URL = require('url'); // Come from node.js module
+const middy = require('middy');
 
+const sampleLogging = require('../middlewares/sample-logging');
+const correlationIds = require('../middlewares/capture-correlation-ids');
 const cloudwatch = require('../libs/cloudwatch'); // Use this library to record metrics
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
@@ -71,7 +74,7 @@ const getRestaurants = async () => {
 };
 
 // User a Lambda function to serve static content
-module.exports.handler = async (event, context, callback) => {
+const handler = async (event, context, callback) => {
   const template = await loadHtml();
   // Use cloudwatch library to record metrics asynchronously
   const restaurants = await cloudwatch.trackExecTime('GetRestaurantsLatency', () => getRestaurants());
@@ -97,3 +100,5 @@ module.exports.handler = async (event, context, callback) => {
 
   callback(null, response);
 };
+// The capture-correlation-ids middleware has to go first due to the sample-logging middleware need the context information it collected
+module.exports.handler = middy(handler).use(correlationIds()).use(sampleLogging());
