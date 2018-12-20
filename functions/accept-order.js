@@ -8,13 +8,13 @@ const streamName = process.env.order_events_stream;
 
 module.exports.handler = async (event, context, callback) => {
   const body = JSON.parse(event.body);
-  const { orderId, userEmail, restaurantName } = body;
+  const { orderId, email, restaurantName } = body;
 
-  console.log(`restaurant [${restaurantName}] accepted order ID [${orderId}] from user [${userEmail}]`);
+  console.log(`restaurant [${restaurantName}] accepted order ID [${orderId}] from user [${email}]`);
 
   const data = {
     orderId,
-    userEmail,
+    email,
     restaurantName,
     eventType: 'order_accepted',
   };
@@ -25,7 +25,7 @@ module.exports.handler = async (event, context, callback) => {
     PartitionKey: orderId,
   };
 
-  await kinesis.putRecord(req);
+  await kinesis.putRecord(req).promise();
   console.log('published \'order_accepted\' event into Kinesis');
 
   const response = {
