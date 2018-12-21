@@ -1,14 +1,33 @@
 import awscred from 'awscred';
+import AWS from 'aws-sdk';
+
+const region = 'us-west-2';
+AWS.config.region = region;
+const SSM = new AWS.SSM(); // Read paramters from EC2 paramter store
 
 let isInitialized = false;
 
-const init = () => new Promise((resolve, reject) => {
+const getParameters = async keys => {
+  const prefix = '/serverless-demo/dev/';
+  const req = { Names: keys.map(key => `${prefix}${key}`) };
+  const resp = await SSM.getParameters(req).promise();
+  const params = {};
+  resp.Parameters.forEach(param => { params[param.Name.substr(prefix.length)] = param.Value; });
+  return params;
+};
+
+const init = () => new Promise(async (resolve, reject) => {
   if (isInitialized) resolve();
-  process.env.AWS_REGION = 'us-west-2';
-  process.env.cognito_user_pool_id = 'us-west-2_sYFtW8M2B';
-  process.env.cognito_client_id = '3rl1fppi7b958ahlfj9je9rk6s';
-  process.env.cognito_server_client_id = '3rl1fppi7b958ahlfj9je9rk6s';
-  process.env.restaurants_api = 'https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev/restaurants';
+  const params = await getParameters([
+    'cognito_user_pool_id',
+    'cognito_client_id',
+    'restaurants_api',
+  ]);
+  process.env.AWS_REGION = region;
+  process.env.cognito_user_pool_id = params.cognito_user_pool_id;
+  process.env.cognito_client_id = params.cognito_client_id;
+  process.env.cognito_server_client_id = params.cognito_client_id;
+  process.env.restaurants_api = params.restaurants_api;
   process.env.restaurants_table = 'restaurants';
 
   // User the awscred library to load credantial keys from the local profile.
