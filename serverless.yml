@@ -66,10 +66,10 @@ functions:
           path: /
           method: get
     environment:
-      restaurants_api: https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev/restaurants
-      orders_api: https://np96ddpbzb.execute-api.us-west-2.amazonaws.com/dev/orders
-      cognito_user_pool_id: us-west-2_sYFtW8M2B
-      cognito_client_id: 3rl1fppi7b958ahlfj9je9rk6s
+      restaurants_api: ${ssm:/serverless-demo/${self:custom.stage}/restaurants_api}
+      orders_api: ${ssm:/serverless-demo/${self:custom.stage}/orders_api}
+      cognito_user_pool_id: ${ssm:/serverless-demo/${self:custom.stage}/cognito_user_pool_id}
+      cognito_client_id: ${ssm:/serverless-demo/${self:custom.stage}/cognito_client_id}
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
     iamRoleStatements:
       - Effect: Allow
@@ -101,7 +101,7 @@ functions:
           path: /restaurants/search
           method: post
           authorizer:
-            arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
+            arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/${ssm:/serverless-demo/${self:custom.stage}/cognito_user_pool_id}
     environment:
       restaurants_table: restaurants
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
@@ -118,7 +118,7 @@ functions:
           path: /orders
           method: post
           authorizer:
-            arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/us-west-2_sYFtW8M2B
+            arn: arn:aws:cognito-idp:#{AWS::Region}:#{AWS::AccountId}:userpool/${ssm:/serverless-demo/${self:custom.stage}/cognito_user_pool_id}
     environment:
       order_events_stream: order-events # The event for Kinesis
       async_metrics: true # Use this variable to control whether send the metrics to CloudWatch Async
