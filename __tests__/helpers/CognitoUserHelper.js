@@ -13,7 +13,8 @@ const cognito = new AWS.CognitoIdentityServiceProvider();
 // needs number, special char, upper and lower case
 const randomPassword = () => `${chance.string({ length: 8 })}Se0!test`;
 
-export const registerUser = () => new Promise((resolve, reject) => {
+export const registerUser = () => new Promise((resolve, reject) => {console.log(process.env.cognito_server_client_id);
+
   const userpoolId = process.env.cognito_user_pool_id;
   const clientId = process.env.cognito_server_client_id;
   const firstName = chance.first();
